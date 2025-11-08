@@ -1,13 +1,17 @@
-import React, { useEffect } from 'react'
-import Room from './Room';
+import { useEffect, useRef, useState } from "react"
+import { Room } from "./Room";
 
-const Landing = () => {
-    const [joined, setJoined] = React.useState(false);
-     const [localAudioTrack, setLocalAudioTrack] = React.useState<MediaStreamTrack | null>(null);
-    const [localVideoTrack, setlocalVideoTrack] = React.useState<MediaStreamTrack | null>(null);
-    const videoRef = React.useRef<HTMLVideoElement>(null);
 
-      const getCam = async () => {
+
+export const Landing = () => {
+    const [name, setName] = useState("");
+    const [localAudioTrack, setLocalAudioTrack] = useState<MediaStreamTrack | null>(null);
+    const [localVideoTrack, setlocalVideoTrack] = useState<MediaStreamTrack | null>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    const [joined, setJoined] = useState(false);
+
+    const getCam = async () => {
         const stream = await window.navigator.mediaDevices.getUserMedia({
             video: true,
             audio: true
@@ -25,21 +29,25 @@ const Landing = () => {
         // MediaStream
     }
 
-    // useEffect(() => {
-    //     if (videoRef && videoRef.current) {
-    //         getCam()
-    //     }
-    // }, [videoRef]);
-    if(!joined){
-        return(
-        <div>
-         <video autoPlay ref={videoRef}></video>
-        <button  onClick={()=>setJoined(!joined)} >Join</button>
+    useEffect(() => {
+        if (videoRef && videoRef.current) {
+            getCam()
+        }
+    }, [videoRef]);
+
+    if (!joined) {
+            
+    return <div>
+            <video autoPlay ref={videoRef}></video>
+            <input type="text" onChange={(e) => {
+                setName(e.target.value);
+            }}>
+            </input>
+            <button onClick={() => {
+                setJoined(true);
+            }}>Join</button>
         </div>
-        )
     }
-  return (
-    <Room />
-  )
+
+    return <Room name={name} localAudioTrack={localAudioTrack} localVideoTrack={localVideoTrack} />
 }
-export default Landing
